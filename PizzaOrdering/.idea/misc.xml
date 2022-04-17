@@ -5,6 +5,8 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.18614130434782608" />
         <entry key="app/src/main/res/layout/activity_order_history.xml" value="0.14583333333333334" />
+        <entry key="app/src/main/res/layout/order_list.xml" value="0.37985076904296877" />
+        <entry key="app/src/main/res/layout/toppingview.xml" value="0.16041666666666668" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.16041666666666668" />
       </map>
     </option>

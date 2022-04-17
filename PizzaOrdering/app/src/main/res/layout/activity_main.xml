@@ -78,6 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:text="Place Order"
+        android:onClick="placeOrderLogic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/total"
         app:layout_constraintRight_toRightOf="parent" />
