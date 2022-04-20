@@ -13,4 +13,13 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="cover">
+        <item name="android:background">#433B2B</item>
+    </style>
+
+    <style name="heading">
+        <item name="android:textColor">@color/purple_200</item>
+        <item name="android:background">@color/white</item>
+    </style>
 </resources>

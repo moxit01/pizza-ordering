@@ -4,20 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pizzaordering.OrderAdapter;
 import com.example.pizzaordering.OrderContract;
@@ -35,18 +32,20 @@ public class OrderHistory extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        SharedPreferences preferences = getSharedPreferences("PIZZAAPP", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
+
+
         headingtv = findViewById(R.id.headingtv);
         RecyclerView waitlistRecyclerView;
         waitlistRecyclerView = (RecyclerView) this.findViewById(R.id.all_orders_list_view);
         waitlistRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         OrderDbHelper dbHelper = new OrderDbHelper(this);
         mDb = dbHelper.getWritableDatabase();
+
         cursor = getAllOrders();
+
         headingtv.setText("Your Orders (" + cursor.getCount() + ")");
         mAdapter = new OrderAdapter(this, cursor);
         waitlistRecyclerView.setAdapter(mAdapter);
@@ -62,30 +61,16 @@ public class OrderHistory extends AppCompatActivity {
 
     public void delete(final long orderid) {
 
-        builder.setTitle("Confirmation");
-        builder.setMessage("Are you sure you want to delete this order?");
+        Context context = getApplicationContext();
 
-        builder.setPositiveButton(android.R.string.yes, (dialog, which) -> {
-            boolean option = deleteOrder(orderid);
-            showorders();
-            dialog.dismiss();
-        });
-
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialog,
-                                int which)
-            {
-
-                dialog.cancel();
-            }
-
-        });
-
+        boolean option = deleteOrder(orderid);
+        showorders();
+        Toast toast = Toast.makeText(context,"Deleted!", Toast.LENGTH_SHORT);
+        toast.show();
 
     }
 
-    private Cursor getAllOrders() {
+    public Cursor getAllOrders() {
         return mDb.query(
                 OrderContract.OrderEntry.TABLE_NAME,
                 null,
@@ -124,7 +109,7 @@ public class OrderHistory extends AppCompatActivity {
     }
 
 
-    private boolean deleteOrder(long id) {
+    public boolean deleteOrder(long id) {
         return mDb.delete(OrderContract.OrderEntry.TABLE_NAME, OrderContract.OrderEntry._ID + "=" + id, null) > 0;
     }
 

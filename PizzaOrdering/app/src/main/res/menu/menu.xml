@@ -4,5 +4,6 @@
 
     <item
         android:id="@+id/orders"
-        android:title="Orders" />
+        android:title="Orders"
+        app:showAsAction="never"/>
 </menu>

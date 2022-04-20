@@ -1,11 +1,7 @@
 package com.example.pizzaordering;
 
 import android.content.Context;
-import android.content.Context;
 import android.view.View;
-import com.example.pizzaordering.MainActivity;
-import com.example.pizzaordering.R;
-import com.example.pizzaordering.Toppings;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;

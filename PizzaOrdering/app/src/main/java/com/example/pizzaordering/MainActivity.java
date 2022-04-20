@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,25 +20,24 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
 
     ListView toppinglv;
     ArrayList<Toppings> toppinglist;
     ArrayList<Boolean> selectedToppings;
     private SQLiteDatabase mDb;
     public int baseprice = 15;
-    TextView total,choosetoppingtv,basepricetv;
+    TextView total,choosetoppingtv,basepricetv,heading;
     ToppingAdapter adapter;
-    AlertDialog.Builder builder1;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        SharedPreferences preferences = getSharedPreferences("PIZZAAPP", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
 
 
         super.onCreate(savedInstanceState);
@@ -76,12 +76,17 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ToppingAdapter(toppinglist, selectedToppings, this);
         toppinglv.setAdapter(adapter);
 
+
+        heading = (TextView)findViewById(R.id.heading);
+        heading.setSelected(true);
+
+
+        // Get a writable database because you will be adding restaurant customers
         OrderDbHelper dbHelper = new OrderDbHelper(this);
         mDb = dbHelper.getWritableDatabase();
 
 
     }
-
 
 
 
@@ -92,60 +97,67 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.orders) {
-            startActivity(new Intent(getApplicationContext(), OrderHistory.class));
-        }
-        return super.onOptionsItemSelected(item);
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.orders:
+                Intent intent1 = new Intent(this, OrderHistory.class);
+                startActivity(intent1);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+
+
+
+
 
     private void PlaceOrder(int total) {
         ContentValues cv = new ContentValues();
         cv.put(OrderContract.OrderEntry.COLUMN_TOTAL, total);
-        long orderid = mDb.insert(OrderContract.OrderEntry.TABLE_NAME, null, cv);
+
+        //testing values.
+        System.out.println(cv+"Hellooooooooo");
+
+            long orderid = mDb.insert(OrderContract.OrderEntry.TABLE_NAME, null, cv);
 
         for (int i = 0; i < selectedToppings.size(); i++) {
             ContentValues cv1 = new ContentValues();
-            cv.put(OrderDetailContract.OrderDetailEntry.COLUMN_TOPPING_NAME, toppinglist.get(i).getName());
-            cv.put(OrderDetailContract.OrderDetailEntry.COLUMN_TOPPING_PRICE, toppinglist.get(i).getPrice());
-            cv.put(OrderDetailContract.OrderDetailEntry.COLUMN_ORDER_ID, orderid);
-            long orderdetailid = mDb.insert(OrderDetailContract.OrderDetailEntry.TABLE_NAME, null, cv);
+            cv1.put(OrderDetailContract.OrderDetailEntry.COLUMN_TOPPING_NAME, toppinglist.get(i).getName());
+            cv1.put(OrderDetailContract.OrderDetailEntry.COLUMN_TOPPING_PRICE, toppinglist.get(i).getPrice());
+            cv1.put(OrderDetailContract.OrderDetailEntry.COLUMN_ORDER_ID, orderid);
+            mDb.insert(OrderDetailContract.OrderDetailEntry.TABLE_NAME, null, cv1);
         }
 
+        refresh();
 
-        builder1.setTitle("Confirmation");
-        builder1.setMessage("Order Placed successfully?");
+        Context context = getApplicationContext();
+        Toast toast = Toast.makeText(context,"Added Successfully!", Toast.LENGTH_SHORT);
+        toast.show();
 
-        builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                refresh();
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-    }
-
-    public void updateBasePrice() {
-        total.setText("TOTAL: $" + baseprice);
     }
 
     public void placeOrderLogic(View view) {
+
         PlaceOrder(baseprice);
+
     }
 
-    public void refresh() {
+    public void updateBasePrice() {
 
+        total.setText("TOTAL: $" + baseprice);
+
+    }
+
+
+
+    public void refresh() {
         adapter.notifyDataSetChanged();
         baseprice = 15;
         total.setText("TOTAL: $" + baseprice);
     }
-
-
 }
-
-
